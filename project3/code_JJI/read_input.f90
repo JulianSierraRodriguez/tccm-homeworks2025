@@ -11,7 +11,7 @@ contains
   integer function read_Natoms(input_file) result(Natoms)
     implicit none
     character(len=*), intent(in) :: input_file
-    integer :: Natoms !!! esta linea chatGPT dice que hay que quitarla, revisar
+    ! integer :: Natoms !!! esta linea chatGPT dice que hay que quitarla, revisar
     
     open(16,file=input_file, status='old')  ! opens the file
     read(16,*)Natoms ! read the first line of the file 
@@ -28,6 +28,7 @@ contains
     integer, intent(in) :: Natoms
     double precision, intent(out) :: coord(Natoms,3)
     double precision, intent(out) :: mass(Natoms)
+    integer :: i
 
     open(16,file=input_file, status='old')
     read(16,*) ! Pass first line (Natoms)

@@ -1,30 +1,38 @@
 
 F90     = gfortran
-FFLAGS  = -O3 -fopenmp -I/usr/lib/x86_64-linux-gnu/openmpi/include
-LIBS    = -L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi -lmpi_mpifh
+# FFLAGS  = -O3 -fopenmp -I/usr/lib/x86_64-linux-gnu/openmpi/include
+# LIBS    = -L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi -lmpi_mpifh
+LIBS = 
+FFLAGS  = -O3
 
 # Defaults
-SRC ?= dot_product.f90
-OBJ = $(SRC:.f90=.o)
-PROGRAM = $(SRC:.f90=.x)
-NP ?= 1
-OMP ?= 1
+SRCS = \
+	acceleration.f90 \
+	kinetic_energy.f90 \
+	potential_energy.f90 \
+	read_input.f90 \
+	main.f90 
+OBJS = $(SRCS:.f90=.o)
+PROGRAM = program.exe
+# NP ?= 1
+# OMP ?= 1
 
-.PHONY: all run clean
+.PHONY: all clean
 
 all: $(PROGRAM)
 
-$(PROGRAM): $(OBJ)
-	$(F90) $(FFLAGS) $(OBJ) $(LIBS) -o $@
+$(PROGRAM): $(OBJS)
+	$(F90) $(FFLAGS) -o $@ $^ $(LIBS)
 
+#Compile step: .f90 -> .0  /// and also the .mod for modules
 %.o: %.f90
 	$(F90) $(FFLAGS) -c $<
 
-run: $(PROGRAM)
-	OMP_NUM_THREADS=$(OMP) mpirun -np $(NP) ./$(PROGRAM)
+# run: $(PROGRAM)
+# 	OMP_NUM_THREADS=$(OMP) mpirun -np $(NP) ./$(PROGRAM)
 
 clean:
-	rm -f $(OBJ) $(PROGRAM)
+	rm -f $(OBJS) $(PROGRAM)
 
 help: 
 	@echo "To compile a file    ===> make SRC=file.f90"
