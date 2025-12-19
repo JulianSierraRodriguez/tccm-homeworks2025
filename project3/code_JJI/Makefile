@@ -7,7 +7,7 @@ FFLAGS  = -O3
 
 # Defaults
 SRCS = \
-	acceleration.f90 \
+	acceleration_mod.f90 \
 	kinetic_energy.f90 \
 	potential_energy.f90 \
 	read_input.f90 \

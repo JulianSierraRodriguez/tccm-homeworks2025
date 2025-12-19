@@ -1,6 +1,6 @@
 ! This module contains 1 subroutine that computes acceleration
 
-module acceleration
+module acceleration_mod
 
   implicit none
 
@@ -62,6 +62,6 @@ contains
 
   end subroutine compute_acc
 
-end module acceleration
+end module acceleration_mod
 
 

@@ -2,13 +2,15 @@ program main
   use read_input ! calls the module to be able to use its functions and subroutines.
   use potential_energy
   use kinetic_energy
+  use acceleration_mod
+
   implicit none
 
   integer :: Natoms, i_stat, steps, M, i, j
   double precision :: epsilon, sigma, V_total, T_total, E_total, time_step
   double precision, external :: E
   character(100) :: input_file ! these are more than enough characters for this input.
-  double precision, allocatable :: coord(:,:), mass(:), distance(:,:), velocity(:,:)
+  double precision, allocatable :: coord(:,:), mass(:), distance(:,:), velocity(:,:), acceleration(:,:)
 
   input_file = "inp.txt"
   epsilon   = 0.997 ! kJ/mol
@@ -51,13 +53,16 @@ program main
     write(*,*) distance(i,:)
   end do
 
-  !!!!!! Second module potential_energy
+  !!!!!! Second module -> potential_energy
 
+  ! We use the V function to obtain the initial potential energy
   V_total = V(epsilon, sigma, Natoms, distance) ! kJ/mol
   write(*,*) "V_total = ", V_total, "kJ/mol"
 
+  !!!!!! Third module -> kinetic_energy
+
   ! allocate the velocities array, check it, and initialize it to 0.
-  allocate (velocity(Natoms,Natoms),stat=i_stat)
+  allocate (velocity(Natoms,3),stat=i_stat)
   call error_allocate(i_stat)
 
   do i = 1,Natoms
@@ -71,6 +76,7 @@ program main
     write(*,*) velocity(i,:)
   end do
 
+  ! We use the T function to obtain the initial kinetic energy
   T_total = T(Natoms, velocity, mass)
 
   write(*,*) "T_total = ", T_total, "kJ/mol"
@@ -78,6 +84,17 @@ program main
   E_total = E(V_total,T_total)
   write(*,*) "E_total = ", E_total, "kJ/mol"
 
+  !!!!!! Fourth module -> acceleration
+
+  allocate (acceleration(Natoms,3),stat=i_stat)
+  call error_allocate(i_stat)
+
+  call compute_acc(Natoms, coord, mass, distance, epsilon, sigma, acceleration)
+
+  write(*,*) "acceleration = "
+  do i = 1,Natoms
+    write(*,*) acceleration(i,:)
+  end do
 
 end program main
 
@@ -94,5 +111,5 @@ double precision function E(V_total,T_total)
   double precision, intent(in) :: V_total,T_total
 
   E = T_total + V_total
-  
+
 end function E
