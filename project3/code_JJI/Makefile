@@ -13,6 +13,7 @@ SRCS = \
 	read_input.f90 \
 	main.f90 
 OBJS = $(SRCS:.f90=.o)
+MODS = $(SRCS:.f90=.mod)
 PROGRAM = program.exe
 # NP ?= 1
 # OMP ?= 1
@@ -32,7 +33,7 @@ $(PROGRAM): $(OBJS)
 # 	OMP_NUM_THREADS=$(OMP) mpirun -np $(NP) ./$(PROGRAM)
 
 clean:
-	rm -f $(OBJS) $(PROGRAM)
+	rm -f $(OBJS) $(MODS) $(PROGRAM) 
 
 help: 
 	@echo "To compile a file    ===> make SRC=file.f90"

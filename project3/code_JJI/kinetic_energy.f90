@@ -1,6 +1,6 @@
 ! This module contains 1 function that calculates total kinetic energy
 
-module kin_energy
+module kinetic_energy
 
   implicit none
 
@@ -29,4 +29,4 @@ contains
 
   end function T
 
-end module kin_energy
+end module kinetic_energy

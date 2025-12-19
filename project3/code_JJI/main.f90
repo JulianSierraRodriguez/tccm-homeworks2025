@@ -1,13 +1,18 @@
 program main
   use read_input ! calls the module to be able to use its functions and subroutines.
+  use potential_energy
   implicit none
 
   integer :: Natoms, i_stat, i
+  double precision :: epsilon, sigma
   character(100) :: input_file ! these are more than enough characters for this input.
-  double precision, allocatable :: coord(:,:), mass(:), distance(:,:)
+  double precision, allocatable :: coord(:,:), mass(:), distance(:,:), V(:,:)
 
   ! We call the read_Natoms function from the read_input module to obtain the number of atoms from the file.
   input_file = "inp.txt"
+  epsilon = 0.997
+  sigma   = 3.405
+
   Natoms = read_Natoms(input_file)
 
   write(*,*) "Natoms = ", Natoms
@@ -38,6 +43,19 @@ program main
   write(*,*) "distance = "
   do i = 1,Natoms
     write(*,*) distance(i,:)
+  end do
+
+  !!!!!! Second module potential_energy
+
+  ! We allocate the array for the potential energy and check if it was correctly allocated
+  allocate (V(Natoms,Natoms),stat=i_stat)
+  call error_allocate(i_stat)
+
+  
+  V = VLJ(epsilon, sigma, Natoms, distance)
+  write(*,*) "V = "
+  do i = 1,Natoms
+    write(*,*) V(i,:)
   end do
 
 end program main

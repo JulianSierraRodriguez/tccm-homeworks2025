@@ -1,12 +1,12 @@
 ! This module contains 1 function that calculates total potential energy using Lennard-Jones potential
 
-module pot_energy
+module potential_energy
 
   implicit none
 
 contains
 
-  double precision function V(epsilon, sigma, Natoms, distance)
+  double precision function VLJ(epsilon, sigma, Natoms, distance)
     implicit none
     double precision, intent(in) :: epsilon, sigma
     integer, intent(in) :: Natoms
@@ -14,7 +14,7 @@ contains
     double precision :: rij
     integer :: i, j
     
-    V = 0.0d0 ! initialize variable
+    VLJ = 0.0d0 ! initialize variable
 
     ! same nested loop as in compute_distances
     ! without a repetition of pairs (only upper diagonal part of the matrix is filled and used)
@@ -22,10 +22,10 @@ contains
       do j = i+1,Natoms
         ! Compute total potential energy using Lennard Jones potential
         rij = distance(i,j)
-        V = V + 4.0d0*epsilon * ( (sigma/rij)**12 - (sigma/rij)**6 )
+        VLJ = VLJ + 4.0d0*epsilon * ( (sigma/rij)**12 - (sigma/rij)**6 )
       end do
     end do
 
-  end function V
+  end function VLJ
 
-end module pot_energy
+end module potential_energy
