@@ -40,6 +40,7 @@ contains
 
     ! Convert coordinates from Angstroms to nanometers
     coord = coord/10
+    
 
   end subroutine read_molecule
 
