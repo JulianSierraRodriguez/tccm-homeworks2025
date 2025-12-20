@@ -75,9 +75,9 @@ program main
   end do
 
   ! We use the T function to obtain the initial kinetic energy
-  T_total = T(Natoms, velocity, mass)
+  T_total = T(Natoms, velocity, mass) ! kJ/mol
 
-  E_total = E(V_total,T_total)
+  E_total = E(V_total,T_total) ! kJ/mol
 
   !!!!!! Fourth module -> acceleration
 
@@ -90,12 +90,30 @@ program main
 
   !!!!!! MD -> Verlet algorithm
 
+  write(u_output,'(A)') "|---------------------------|"
+  write(u_output,'(A)') "|     Starting the MD       |"
+  write(u_output,'(A)') "|---------------------------|"
+
   do iter = 1,steps
-    call verlet_algorithm(Natoms,coord,velocity,acceleration, time_step,epsilon,sigma,mass,T_total, V_total, E_total,u_xyz,iter,M)
+    call verlet_algorithm(Natoms,coord,velocity,acceleration, time_step,epsilon,sigma,mass,T_total, V_total, &
+    E_total,u_xyz,u_output,iter,M)
   end do
 
+  write(u_output,'(A)') "|---------------------------|"
+  write(u_output,'(A)') "| The MD ended succesfully! |"
+  write(u_output,'(A)') "|---------------------------|"
+
+
+  ! We close our files.
   close(u_output)
   close(u_xyz)
+
+  ! We deallocate the arrays
+  deallocate(mass)
+  deallocate(coord)
+  deallocate(velocity)
+  deallocate(acceleration)
+  deallocate(distance)
 end program main
 
 subroutine error_allocate(i_stat)
@@ -143,6 +161,8 @@ subroutine write_output_head(u_output, input_file, epsilon, sigma, time_step, st
   character(100), intent(in) :: input_file, output_file, xyz_file
   double precision :: epsilon, sigma, time_step
 
+  ! Writing a header for the output file with the initial information
+
   write(u_output,'(A)') "|---------------|"
   write(u_output,'(A)') "|   MD OUTPUT   |"
   write(u_output,'(A)') "|---------------|"
@@ -173,6 +193,9 @@ subroutine write_xyz(u_xyz, Natoms, coord, E_total, V_total, T_total)
   double precision, intent(in) :: coord(Natoms,3)
   double precision, intent(in) :: E_total, V_total, T_total
   integer :: i
+
+  !We write the trajectory step in the needed format
+
   write(u_xyz,'(I0)') Natoms
   write(u_xyz,'(A,1X,F8.5,1X,A,1X,F8.5,1X,A,1X,F8.5,1X,A)') &
   "E_total = ", E_total,"| V_total = ", V_total,"| T_total = ", T_total, "(kJ/mol)"
@@ -181,15 +204,16 @@ subroutine write_xyz(u_xyz, Natoms, coord, E_total, V_total, T_total)
   end do
 end subroutine write_xyz
 
-subroutine verlet_algorithm(Natoms,coord,velocity,acceleration, time_step,epsilon,sigma,mass,T_total, V_total, E_total,u_xyz,iter,M)
+subroutine verlet_algorithm(Natoms,coord,velocity,acceleration, time_step,epsilon,sigma,mass,T_total, V_total, &
+E_total,u_xyz,u_output,iter,M)
   use read_input
   use acceleration_mod
   use kinetic_energy
   use potential_energy
 
   implicit none
-  integer, intent(in) :: Natoms,u_xyz, iter,M
-  double precision, intent(in) :: time_step,epsilon,sigma
+  integer, intent(in) :: Natoms, u_xyz, u_output, iter, M
+  double precision, intent(in) :: time_step, epsilon, sigma
   double precision :: coord(Natoms,3)
   double precision :: velocity(Natoms,3)
   double precision :: acceleration(Natoms,3)
@@ -202,31 +226,45 @@ subroutine verlet_algorithm(Natoms,coord,velocity,acceleration, time_step,epsilo
   double precision :: velocity_new(Natoms,3)
   double precision :: acceleration_new(Natoms,3)
 
+  ! We use equation 7 to compute the new positions.
   do i = 1,Natoms
     do j = 1,3
       coord_new(i,j) = coord(i,j) + velocity(i,j)*time_step + acceleration(i,j)*((time_step**2)/2)
     end do
   end do
 
+  ! We compute the new distances and then the new acceleration.
   call compute_distances(Natoms, coord_new, distance_new)
   call compute_acc(Natoms, coord, mass, distance_new, epsilon, sigma, acceleration_new)
 
+  ! We use equation 8 to compute the new velocities.
   do i = 1,Natoms
     do j = 1,3
       velocity_new(i,j) = velocity(i,j) + 0.5*(acceleration(i,j)+ acceleration_new(i,j))*time_step
     end do
   end do
 
+  ! We compute the new set of Enery terms and the total energy.
   V_total = V(epsilon, sigma, Natoms, distance_new) ! kJ/mol
-  T_total = T(Natoms, velocity_new, mass)
-  E_total = E(V_total,T_total)
+  T_total = T(Natoms, velocity_new, mass) ! kJ/mol
+  E_total = E(V_total,T_total) ! kJ/mol
 
+  ! We output the new positions every M steps on the trajectory file.
   if (mod(iter,M) .eq. 0) then
     call write_xyz(u_xyz, Natoms, coord_new, E_total, V_total, T_total)
+    if (mod(iter,M*10) .eq. 0) then
+      write(u_output, '(A,1X,I0)') "Step =",iter
+      write(u_output,'(A,1X,F8.5,1X,A,1X,F8.5,1X,A,1X,F8.5,1X,A)') &
+      "E_total = ", E_total,"| V_total = ", V_total,"| T_total = ", T_total, "(kJ/mol)"
+      write(u_output, '(A)') "------------------------------------"
+    end if
   end if
   
+  ! We upload our set of variables.
   coord = coord_new
   velocity = velocity_new
   acceleration = acceleration_new
+
+  ! The internal arrays are not allocatable, so they free the space automatically.
 
 end subroutine verlet_algorithm
