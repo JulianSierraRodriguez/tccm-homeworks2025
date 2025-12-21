@@ -74,7 +74,7 @@ CORE_OBJS  = $(filter-out $(MAIN_OBJ), $(OBJS))
 
 .PHONY: test test_dirs
 
-test: test_dirs $(test_PROGS) gen_input_test run_test
+test: test_dirs $(test_OBJS) $(test_PROGS) gen_input_test run_test
 
 $(TEST_BUILD_EXE)/%.x: $(TEST_BUILD_OBJ)/%.o $(CORE_OBJS) | test_dirs
 	$(F90) $(FFLAGS) -I$(MOD_DIR) -o $@ $^
