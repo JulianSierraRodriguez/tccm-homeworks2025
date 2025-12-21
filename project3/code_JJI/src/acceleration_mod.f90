@@ -35,7 +35,7 @@ contains
         ! Compute force components F_ij for x, y, z
         F_x = U_r * (coord(i,1)-coord(j,1)) / rij
         F_y = U_r * (coord(i,2)-coord(j,2)) / rij
-        F_x = U_r * (coord(i,3)-coord(j,3)) / rij
+        F_z = U_r * (coord(i,3)-coord(j,3)) / rij
 
         ! Finally compute total forces for each atom F_i, for each coordinate x, y, z
         ! Add all components contributing to each total force
