@@ -8,9 +8,11 @@ FFLAGS  = -O3
 # Defaults
 SRCS = \
 	acceleration_mod.f90 \
-	kinetic_energy.f90 \
-	potential_energy.f90 \
-	read_input.f90 \
+	energies.f90 \
+	error_treat.f90 \
+	treat_input.f90 \
+  treat_output.f90 \
+  verlet_al.f90 \
 	main.f90 
 OBJS = $(SRCS:.f90=.o)
 MODS = $(SRCS:.f90=.mod)
