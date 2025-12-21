@@ -5,6 +5,10 @@ F90     = gfortran
 LIBS = 
 FFLAGS  = -O3
 
+OBJ_DIR = build/obj
+MOD_DIR = build/mod
+
+
 # Defaults
 SRCS = \
 	acceleration_mod.f90 \
@@ -14,29 +18,32 @@ SRCS = \
   treat_output.f90 \
   verlet_al.f90 \
 	main.f90 
-OBJS = $(SRCS:.f90=.o)
-MODS = $(SRCS:.f90=.mod)
+
+# OBJS = $(SRCS:.f90=.o)
+OBJS = $(patsubst %.f90,$(OBJ_DIR)/%.o,$(SRCS))
+# MODS = $(SRCS:.f90=.mod)
+# MODS = $(patsubst %.f90,$(OBJ_DIR)/%.o,$(SRCS))
 PROGRAM = program.exe
-# NP ?= 1
-# OMP ?= 1
 
-.PHONY: all clean
 
-all: $(PROGRAM)
+
+.PHONY: all clean help
+
+all: dirs $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
-	$(F90) $(FFLAGS) -o $@ $^ $(LIBS)
+	$(F90) $(FFLAGS) -I$(MOD_DIR) -o $@ $^ $(LIBS)
 
 #Compile step: .f90 -> .0  /// and also the .mod for modules
-%.o: %.f90
-	$(F90) $(FFLAGS) -c $<
+$(OBJ_DIR)/%.o: %.f90 | dirs
+	$(F90) $(FFLAGS) -c -J$(MOD_DIR) -I$(MOD_DIR) -o $@ $<
 
-# run: $(PROGRAM)
-# 	OMP_NUM_THREADS=$(OMP) mpirun -np $(NP) ./$(PROGRAM)
+dirs:
+	mkdir -p $(OBJ_DIR) $(MOD_DIR)
 
 clean:
-	rm -f $(OBJS) $(MODS) $(PROGRAM) 
+	rm -rf $(OBJ_DIR) $(MOD_DIR) $(PROGRAM) 
 
 help: 
 	@echo "To compile a file    ===> make SRC=file.f90"
-	@echo "To run an executable ===> make run SRC=file.f90 MPI=X OMP=Y"
+	@echo "clean the files after compilation ===> make clean"
