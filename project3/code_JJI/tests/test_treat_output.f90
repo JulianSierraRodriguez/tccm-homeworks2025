@@ -5,8 +5,8 @@ program test_treat_output
   implicit none
 
   integer :: Natoms = 1, u_out = 10, u_xyz = 20
-  character(len=20) :: f_out = "test_log.out"
-  character(len=20) :: f_xyz = "test_traj.xyz"
+  character(len=100) :: f_out = "test_log.out"
+  character(len=100) :: f_xyz = "test_traj.xyz"
   logical :: exists
   double precision :: coord(1,3), E, V, T
 

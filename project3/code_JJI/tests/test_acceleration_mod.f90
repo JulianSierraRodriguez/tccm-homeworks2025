@@ -4,7 +4,7 @@ program test_acceleration_mod
   use acceleration_mod
   implicit none
 
-  integer, parameter :: Natoms = 2
+  integer, parameter :: N = 2
   double precision :: coord(N,3), mass(N), distance(N,N), acc(N,3)
 
   write(*,*) "=== TEST MODULE: ACCELERATION ==="
@@ -23,7 +23,7 @@ program test_acceleration_mod
 
   ! 3. Call the subroutine
   ! (Using epsilon=1.0, sigma=1.0)
-  call compute_acc(Natoms, coord, mass, distance, 1.0d0, 1.0d0, acc)
+  call compute_acc(N, coord, mass, distance, 1.0d0, 1.0d0, acc)
 
   ! 4. Check results
   write(*,*) "Result for Atom 1 (X, Y, Z):", acc(1,:)

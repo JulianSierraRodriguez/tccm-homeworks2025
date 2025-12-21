@@ -4,7 +4,7 @@ program test_treat_input
   use treat_input
   implicit none
 
-  character(len=20) :: fname
+  character(len=100) ::  fname = "build/tests/bin/inp_test.txt"
   integer :: Natoms
   double precision, allocatable :: coord(:,:)
   double precision, allocatable :: mass(:)
@@ -17,7 +17,7 @@ program test_treat_input
   
   ! Verification:
   if (Natoms == 2) then
-     write(*,*) "[OK] read_Natoms: Read 2 atomos successfully."
+     write(*,*) "[OK] read_Natoms: Read 2 atoms successfully."
   else
      write(*,*) "[FAIL] read_Natoms: Read", Natoms, "and was expecting 2."
   end if

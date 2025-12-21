@@ -48,6 +48,55 @@ dirs:
 clean:
 	rm -rf build $(PROGRAM) 
 
+
+################
+# Test section #
+################
+
+TEST_DIR = tests
+TEST_BUILD_OBJ = build/tests/obj
+TEST_BUILD_EXE = build/tests/bin
+
+tests = \
+	$(TEST_DIR)/test_acceleration_mod_2.f90 \
+	$(TEST_DIR)/test_acceleration_mod.f90 \
+	$(TEST_DIR)/test_energies.f90 \
+	$(TEST_DIR)/test_error_treat.f90 \
+	$(TEST_DIR)/test_treat_input.f90 \
+	$(TEST_DIR)/test_treat_output.f90 \
+	$(TEST_DIR)/test_verlet_al.f90 
+
+test_OBJS = $(patsubst $(TEST_DIR)/%.f90,$(TEST_BUILD_OBJ)/%.o,$(tests))
+test_PROGS = $(patsubst $(TEST_DIR)/%.f90,$(TEST_BUILD_EXE)/%.x,$(tests))
+
+MAIN_OBJ   = $(OBJ_DIR)/main.o
+CORE_OBJS  = $(filter-out $(MAIN_OBJ), $(OBJS))
+
+.PHONY: test test_dirs
+
+test: test_dirs $(test_PROGS) gen_input_test run_test
+
+$(TEST_BUILD_EXE)/%.x: $(TEST_BUILD_OBJ)/%.o $(CORE_OBJS) | test_dirs
+	$(F90) $(FFLAGS) -I$(MOD_DIR) -o $@ $^
+
+gen_input_test: test_dirs
+	@printf '%s\n' \
+    '2' \
+    '' \
+    ' 0.0   0.0  0.0  39.948' \
+    ' 0.0   0.0  10.0  39.948' \
+    > $(TEST_BUILD_EXE)/inp_test.txt
+
+$(TEST_BUILD_OBJ)/%.o: $(TEST_DIR)/%.f90 | test_dirs
+	$(F90) $(FFLAGS) -c -I$(MOD_DIR) -o $@ $<
+
+test_dirs:
+		mkdir -p $(TEST_BUILD_OBJ) $(TEST_BUILD_EXE)
+
+run_test: $(test_PROGS)
+	@echo "\n== RUNNING ALL THE TESTS"
+	@for prog in $(test_PROGS); do ./$$prog;done
+
 help: 
 	@echo "To compile a file    ===> make"
 	@echo "To create needed folders (it does it automatically)    ===> make dirs"
