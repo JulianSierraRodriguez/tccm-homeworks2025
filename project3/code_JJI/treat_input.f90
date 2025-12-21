@@ -1,6 +1,6 @@
 ! This module contains 1 function and 2 subroutines to read input file
 
-module read_input
+module treat_input
 
   implicit none
 
@@ -69,4 +69,4 @@ contains
 
   end subroutine compute_distances
 
-end module read_input
+end module treat_input
