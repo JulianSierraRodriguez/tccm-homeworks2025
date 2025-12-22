@@ -6,13 +6,15 @@ module error_treat
 
 contains
 
+  ! 1 - Checks that the array was allocated correctly
   subroutine error_allocate(i_stat)
     implicit none
     integer, intent(in) :: i_stat
 
-    ! Requirement: unot 10 previously open
+    ! Requirement: i_stat has to be 0 or the allocation failed.
     if (i_stat /= 0) then
       write(10,'(A)') "Memory allocation failed!"
+      ! Stops the program if allocation failed.
       stop 1
     end if
 
