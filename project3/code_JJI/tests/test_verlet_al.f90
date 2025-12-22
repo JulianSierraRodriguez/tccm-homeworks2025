@@ -53,6 +53,7 @@ program test_verlet
   ! Call Verlet for 1 step, for our two-atom system.
   call verlet_algorithm(Natoms, coord, velocity, acc, dt, epsilon, sigma, mass, T, V_p, E, u_xyz, u_out, iter, M)
 
+
   ! TEST 1: Check  coordinates. The correct result is x1 = -0.62 and x2 = 0.62.
   ! If it is correct we update the logical for the coordinates to true.
 
