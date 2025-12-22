@@ -50,6 +50,8 @@ program test_verlet
      write(*,*) "[FAIL] Verlet: Incorrect position. Value:", coord(1,1), "Expected: 1.0"
   end if
 
+  write(*,*) ! Separation line
+
   ! Cleanup: Close and delete dummy files
   close(u_out, status='delete')
   close(u_xyz, status='delete')

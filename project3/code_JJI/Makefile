@@ -58,14 +58,15 @@ TEST_DIR = tests
 TEST_BUILD_OBJ = build/tests/obj
 TEST_BUILD_EXE = build/tests/bin
 
+# To tests only some selected module, eleiminate the rest modules here:
 tests = \
-	$(TEST_DIR)/test_acceleration_mod_2.f90 \
-	$(TEST_DIR)/test_acceleration_mod.f90 \
-	$(TEST_DIR)/test_energies.f90 \
-	$(TEST_DIR)/test_error_treat.f90 \
-	$(TEST_DIR)/test_treat_input.f90 \
-	$(TEST_DIR)/test_treat_output.f90 \
-	$(TEST_DIR)/test_verlet_al.f90 
+  $(TEST_DIR)/test_treat_input.f90 \
+  $(TEST_DIR)/test_treat_output.f90 \
+  $(TEST_DIR)/test_error_treat.f90 \
+  $(TEST_DIR)/test_energies.f90 \
+  $(TEST_DIR)/test_acceleration_mod.f90 \
+  $(TEST_DIR)/test_acceleration_mod_2.f90 \
+  $(TEST_DIR)/test_verlet_al.f90  
 
 test_OBJS = $(patsubst $(TEST_DIR)/%.f90,$(TEST_BUILD_OBJ)/%.o,$(tests))
 test_PROGS = $(patsubst $(TEST_DIR)/%.f90,$(TEST_BUILD_EXE)/%.x,$(tests))

@@ -42,4 +42,6 @@ program test_acceleration_mod
      write(*,*) "[FAIL] Acceleration is zero (something is wrong)."
   end if
 
+  write(*,*) ! Separation line
+
 end program test_acceleration_mod

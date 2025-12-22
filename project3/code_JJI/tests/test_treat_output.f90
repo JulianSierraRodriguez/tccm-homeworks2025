@@ -12,7 +12,7 @@ program test_treat_output
 
   write(*,*) "=== TEST MODULE: TREAT_OUTPUT ==="
 
-  ! --- TEST 1: create_output ---
+  ! TEST 1: create_output
   call create_output(u_out, f_out)
   close(u_out)
 
@@ -23,7 +23,7 @@ program test_treat_output
      write(*,*) "[FAIL] create_output: File does not exist."
   end if
 
-  ! --- TEST 2: write_xyz ---
+  ! TEST 2: write_xyz
   ! We reuse create_output to open the file, assuming it handles the unit
   call create_output(u_xyz, f_xyz)
   
@@ -39,5 +39,7 @@ program test_treat_output
   else
      write(*,*) "[FAIL] write_xyz: XYZ file was not created."
   end if
+
+  write(*,*) ! Separation line
 
 end program test_treat_output

@@ -1,4 +1,4 @@
-! Ths program test independently Kinetic (T), Potential (V), and Total (E) energy calculations
+! This program test independently Kinetic (T), Potential (V), and Total (E) energy calculations
 
 program test_energies
 
@@ -51,5 +51,7 @@ program test_energies
   else
      write(*,*) "[FAIL] Function E: Value", E_tot, "expected 15.0."
   end if
+
+  write(*,*) ! Separation line
 
 end program test_energies

@@ -90,4 +90,6 @@ program test_acceleration_mod_2
      write(*,*) "[FAIL] Z Component incorrect."
   end if
 
+  write(*,*) ! Separation line
+
 end program test_acceleration_mod_2

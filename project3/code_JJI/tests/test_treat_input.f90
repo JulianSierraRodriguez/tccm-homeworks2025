@@ -10,6 +10,7 @@ program test_treat_input
   double precision, allocatable :: mass(:)
   double precision, allocatable :: distance(:,:)
   
+  write(*,*)
   write(*,*) "=== MODULE TEST: TREAT_INPUT ==="
 
   ! TEST 1: read_Natoms
@@ -51,6 +52,7 @@ program test_treat_input
      write(*,*) "[FAIL] compute_distances: Wrong distance:", distance(1,2)
   end if
 
+  write(*,*) ! Separation line
 
   ! Memory clean
   deallocate(coord, mass, distance)

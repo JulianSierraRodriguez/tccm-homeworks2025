@@ -17,4 +17,6 @@ program test_error_treat
   write(*,*) "NOTE: To test actual failure, change stat=1 in the code."
   write(*,*) "      The program should stop and write 'Memory allocation failed'."
 
+  write(*,*) ! Separation line
+
 end program test_error_treat
