@@ -1,3 +1,4 @@
+# This file compiles the main program and tests 
 
 F90     = gfortran
 LIBS = 

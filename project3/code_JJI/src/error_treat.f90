@@ -9,10 +9,13 @@ contains
   subroutine error_allocate(i_stat)
     implicit none
     integer, intent(in) :: i_stat
+
+    ! Requirement: unot 10 previously open
     if (i_stat /= 0) then
       write(10,'(A)') "Memory allocation failed!"
       stop 1
     end if
+
   end subroutine error_allocate
 
 end module error_treat

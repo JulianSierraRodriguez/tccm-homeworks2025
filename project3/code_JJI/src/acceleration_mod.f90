@@ -14,7 +14,6 @@ contains
     double precision, intent(in) :: distance(Natoms,Natoms)
     double precision, intent(in) :: epsilon, sigma
     double precision, intent(out) :: acceleration(Natoms,3)
-
     double precision :: rij, U_r, F_x, F_y, F_z, force(Natoms,3)
     integer :: i, j
     
@@ -26,6 +25,7 @@ contains
       do j = i+1,Natoms
         
         ! IDEA: añadir un if con treshold para rij (evitar dividir entre 0)
+        ! (poner en la documentacion como idea de mejora)
         
         rij = distance(i,j)
 

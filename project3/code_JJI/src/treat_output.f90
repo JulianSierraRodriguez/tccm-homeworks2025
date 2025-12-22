@@ -11,8 +11,8 @@ contains
   subroutine create_output(u,name_file)
     implicit none
     integer, intent(in) :: u
-    integer :: ios
     character(100), intent(in) :: name_file
+    integer :: ios
     logical :: exists
 
     inquire(file=name_file, exist=exists)

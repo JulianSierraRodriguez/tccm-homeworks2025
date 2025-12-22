@@ -11,7 +11,6 @@ contains
   integer function read_Natoms(input_file) result(Natoms)
     implicit none
     character(len=*), intent(in) :: input_file
-    ! integer :: Natoms !!! esta linea chatGPT dice que hay que quitarla, revisar
     
     open(16,file=input_file, status='old')  ! opens the file
     read(16,*)Natoms ! read the first line of the file 
@@ -41,9 +40,7 @@ contains
     ! Convert coordinates from Angstroms to nanometers
     coord = coord/10
     
-
   end subroutine read_molecule
-
 
 
   ! 3 - Subroutine that calculate internuclear distances
@@ -55,7 +52,6 @@ contains
     double precision, intent(out) :: distance(Natoms,Natoms)
     integer :: i, j
     
-
     distance = 0.0d0 ! initialize variable
 
     ! the code uses a nested loop, that will use an atom, and all the rest
