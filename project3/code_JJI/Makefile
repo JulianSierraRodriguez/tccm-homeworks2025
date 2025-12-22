@@ -96,7 +96,7 @@ test_dirs:
 		mkdir -p $(TEST_BUILD_OBJ) $(TEST_BUILD_EXE)
 
 run_test: $(test_PROGS)
-	@echo "\n== RUNNING ALL THE TESTS"
+	@echo "\n == RUNNING ALL THE TESTS =="
 	@for prog in $(test_PROGS); do ./$$prog;done
 
 help: 

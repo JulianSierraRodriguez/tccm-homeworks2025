@@ -9,6 +9,7 @@ program test_error_treat
   write(*,*) "=== TEST MODULE: ERROR_TREAT ==="
 
   ! --- TEST 1: error_allocate (Success Case) ---
+  ! If stat is 0, it means that the allocation was successful.
   stat = 0
   call error_allocate(stat)
   write(*,*) "[OK] error_allocate: Program continued successfully with stat=0."
