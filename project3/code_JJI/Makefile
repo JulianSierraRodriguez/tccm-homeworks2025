@@ -102,4 +102,7 @@ run_test: $(test_PROGS)
 help: 
 	@echo "To compile a file    ===> make"
 	@echo "To create needed folders (it does it automatically)    ===> make dirs"
+	@echo "To create the tests' folders, compile and run the tests ===> make test"
+	@echo "To create the folders for the tests ===> make test_dir"
+	@echo "To run the tests ===> make run_test"
 	@echo "clean the files after compilation ===> make clean"
