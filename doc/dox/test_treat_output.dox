@@ -1,0 +1,111 @@
+/*!
+@file test_treat_output.f90
+@brief Validation tests for the `treat_output` module.
+
+@section Overview Overview
+
+This test program validates all public procedures provided by the
+`treat_output` module, which is responsible for creating output files,
+writing MD simulation headers, and writing the XYZ trajectory steps.
+
+Correct file creation and formatting are critical for reproducibility
+and downstream visualization of the molecular dynamics simulation.
+
+---
+
+@section Tested_Functions Tested functionality
+
+The following procedures are tested:
+
+- `create_output`
+- `write_xyz`
+
+Each test is deterministic and independent, focusing on file handling
+and data formatting correctness.
+
+---
+
+@section test2A Creating a new output file
+
+### Objective
+
+Verify that `create_output` successfully creates a **new file** when
+the file does not exist.
+
+### Procedure
+
+- Call `create_output` with a fresh file name.
+- Close the file and check its existence using `inquire`.
+
+### Expected behavior
+
+- The file must be created in the filesystem.
+- No errors or I/O exceptions should occur.
+
+This test ensures that the simulation can initialize a new output
+log without interfering with previous files.
+
+---
+
+@section test2B Replacing an existing file
+
+### Objective
+
+Verify that `create_output` successfully **replaces an existing file**
+without raising errors.
+
+### Procedure
+
+- Call `create_output` on the same file created in Test 1.
+- Close the file and assume successful replacement.
+
+### Expected behavior
+
+- The procedure must overwrite the existing file without error.
+- There is no need to check contents programmatically; the absence
+  of an error indicates correct behavior.
+
+This test ensures safe handling of repeated simulation runs
+or reinitializations.
+
+---
+
+@section test2C Writing trajectory steps
+
+### Objective
+
+Verify that `write_xyz` correctly writes atomic coordinates and
+energy data in the expected XYZ format.
+
+### Procedure
+
+- Prepare a minimal scenario with 1 atom and dummy energies.
+- Call `write_xyz` to output a single step.
+- Check file existence after writing.
+- Manual inspection of file content is recommended to verify format.
+
+### Expected behavior
+
+- The XYZ file must be created.
+- The number of atoms, coordinates, and energy information
+  should be written in the correct layout.
+- No runtime errors should occur during writing.
+
+This test ensures that simulation snapshots are recorded
+correctly for visualization and post-processing.
+
+---
+
+@section Design_Notes Design notes
+
+- Focuses on **functional correctness of file I/O**.
+- Both new and replace modes are validated.
+- Output correctness beyond existence (e.g., format) may require
+  manual verification.
+- Files are deleted after the test to avoid cluttering the workspace.
+
+@note
+If any of these tests fail, downstream simulation logging or
+trajectory analysis may be compromised.
+*/
+

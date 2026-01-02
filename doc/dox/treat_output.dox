@@ -1,0 +1,137 @@
+/*!
+@file treat_output.f90
+@brief Output and trajectory handling module for Molecular Dynamics simulations.
+
+@section Overview Overview
+
+This module is responsible for **all output generation** during the Molecular
+Dynamics simulation. Its role is purely operational: opening files safely,
+writing a structured header with simulation parameters, and exporting atomic
+coordinates and energies along the trajectory.
+
+No physical modeling or numerical integration is performed here; the module
+exists to **separate I/O concerns from the simulation logic**.
+
+---
+
+@section Functions_and_Subroutines Functions and Subroutines
+
+@section create_output create_output
+
+<b><u>Purpose</u></b>
+
+Creates or replaces an output file and safely associates it with a Fortran unit.
+
+<b><u>Description</u></b>
+
+This subroutine checks whether a file already exists:
+- If it exists, it is opened with `status='REPLACE'`, overwriting its contents.
+- If it does not exist, it is created with `status='NEW'`.
+
+The `IOSTAT` flag is explicitly checked to ensure the file was opened correctly.
+If the operation fails, the program stops immediately to avoid silent I/O errors.
+
+<b><u>Input</u></b>
+- `u`: Fortran logical unit associated with the file.
+- `name_file`: Name of the file to be created or replaced.
+
+<b><u>Design rationale</u></b>
+
+Explicit control of file status avoids:
+- Accidental appending to old data,
+- Platform-dependent default behaviors,
+- Hard-to-detect output corruption.
+
+---
+
+@section write_output_head write_output_head
+
+<b><u>Purpose</u></b>
+
+Writes a structured header containing the main simulation parameters.
+
+<b><u>Description</u></b>
+
+This subroutine prints a human-readable summary of:
+- Input file used,
+- Number of atoms,
+- Number of simulation steps,
+- Time step size,
+- Output and trajectory filenames,
+- Lennard-Jones parameters.
+
+The header is written once at the beginning of the simulation and serves as
+a **self-contained record** of how the trajectory was generated.
+
+<b><u>Input</u></b>
+- `u_output`: Output file unit.
+- `input_file`: Name of the input file.
+- `epsilon`: Lennard-Jones Œµ parameter.
+- `sigma`: Lennard-Jones sigma parameter.
+- `time_step`: Integration time step.
+- `steps`: Total number of simulation steps.
+- `M`: Output frequency.
+- `output_file`: Name of the main output file.
+- `u_xyz`: Trajectory file unit.
+- `xyz_file`: Name of the trajectory file.
+- `Natoms`: Number of atoms.
+
+<b><u>Formatting notes</u></b>
+
+The subroutine makes extensive use of formatted `write()` statements to ensure:
+- Aligned numerical output,
+- Explicit units,
+- Readability without post-processing.
+
+---
+
+@section write_xyz write_xyz
+
+<b><u>Purpose</u></b>
+
+Writes one step of the atomic trajectory in XYZ format.
+
+<b><u>Description</u></b>
+
+This subroutine outputs:
+1. The number of atoms.
+2. A comment line containing the total, potential, and kinetic energies.
+3. One line per atom with its Cartesian coordinates.
+
+The XYZ format allows immediate visualization with standard software like Molden or Jmol to play animation of the dynamics.
+
+<b><u>Input</u></b>
+- `u_xyz`: Trajectory file unit.
+- `Natoms`: Number of atoms.
+- `coord(Natoms,3)`: Atomic coordinates (nm).
+- `E_total`: Total energy.
+- `V_total`: Potential energy.
+- `T_total`: Kinetic energy.
+
+<b><u>Output format</u></b>
+
+Each atom is written as:
+- A fixed atomic label (`Ar`).
+- Three Cartesian coordinates with fixed precision.
+
+@note
+-The atomic symbol is hard-coded for simplicity; the trajectory is intended
+for visualization and debugging rather than chemical specificity.
+- Even though the units used are nm, the values are later printed in angstr√ms.
+
+---
+
+@section Design_Considerations Design Considerations
+
+- Output is fully deterministic and reproducible.
+- No buffering or delayed writes are used, reducing the risk of data loss.
+- The module assumes that file units are managed consistently by the caller.
+- Formatting choices prioritize readability over compactness.
+
+---
+
+@note
+This module intentionally avoids any dependency on simulation internals.
+It can be reused unchanged if the force field or integration algorithm is modified.
+*/
+

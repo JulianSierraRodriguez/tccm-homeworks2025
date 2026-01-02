@@ -1,0 +1,86 @@
+/*!
+@file test_error_treat.f90
+@brief Validation tests for the `error_treat` module.
+
+@section Overview Overview
+
+This test program validates the behavior of the `error_allocate`
+subroutine provided by the `error_treat` module.
+
+The goal of this test is **not** to trigger a failure, but to ensure
+that the error handler behaves correctly when no error is present.
+Specifically, it verifies that the program:
+
+- Continues execution when the allocation status is successful.
+- Does not produce unintended side effects.
+- Does not terminate unexpectedly.
+
+---
+
+@section Purpose Purpose of the test
+
+The `error_allocate` subroutine is designed to act as a **fail-fast
+mechanism**:
+
+- If the allocation status is non-zero, the program must stop
+  immediately.
+- If the allocation status is zero, the program must continue normally.
+
+Because a failure intentionally stops execution, it cannot be tested
+automatically within a single test run. This test therefore focuses on
+the **success path**, which is equally important for robustness.
+
+---
+
+@section Test_Case Test case description
+
+### Test 1: Successful allocation
+
+- Input value:
+  - Allocation status: `stat = 0`
+- Action:
+  - Call `error_allocate(stat)`
+
+### Expected behavior
+
+- The program continues execution.
+- No error message is printed.
+- No abnormal termination occurs.
+
+If the subroutine returned or behaved incorrectly, this test would
+never reach the confirmation message.
+
+---
+
+@section Manual_Failure Manual failure verification
+
+To verify the failure behavior manually, the user may modify the test
+as follows:
+
+- Set `stat = 1` before calling `error_allocate`.
+
+Expected behavior:
+
+- The message `"Memory allocation failed!"` is printed.
+- The program terminates immediately using `STOP`.
+
+This behavior is **intentional** and therefore excluded from automated
+testing.
+
+---
+
+@section Design_Notes Design notes
+
+- This is a **control-flow validation test**, not a numerical test.
+- It confirms correct handling of the *non-error* branch.
+- The test complements all allocation points in the main program.
+- Designed to be simple and unambiguous.
+
+---
+
+@note
+Automated testing frameworks cannot safely test code paths that
+intentionally terminate execution. This test ensures correctness of
+the safe execution path only.
+*/
+

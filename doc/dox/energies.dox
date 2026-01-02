@@ -1,0 +1,105 @@
+/*!
+@file energies.f90
+@brief Documentation for the `energies` module, which calculates kinetic, potential, and total energies in a Molecular Dynamics simulation.
+
+@details
+The `energies` module provides three main functions:
+
+- Kinetic energy (T).
+- Potential energy (V) using a Lennard-Jones potential.
+- Total energy (E = T + V).
+
+These functions are essential for analyzing the dynamics of a system of particles and for verifying energy conservation in Molecular Dynamics (MD) simulations.
+
+@note
+- All functions assume classical Newtonian dynamics.
+- Potential energy can be optimized using cutoffs for large systems.
+---
+
+@section T_Kinetic_Energy Kinetic Energy Function: T
+
+This function calculates the total kinetic energy of the system.
+
+**Parameters:
+- `Natoms` (input): Number of atoms.
+- `velocity` (input): Atomic velocities (Natoms x 3).
+- `mass` (input): Atomic masses (Natoms).
+- Returns: Total kinetic energy of the system.
+
+<b><u>Algorithm and Explanation:</u></b>
+
+The kinetic energy is computed using the classical formula:
+
+\f[
+T = \frac{1}{2} \sum_{i=1}^{N_\text{atoms}} m_i \, |\mathbf{v}_i|^2
+\f]
+
+Steps:
+- Initialize `T = 0`.
+- Loop over all atoms.
+- For each atom, compute the squared velocity magnitude:
+
+\f[
+|\mathbf{v}_i|^2 = v_{i,x}^2 + v_{i,y}^2 + v_{i,z}^2
+\f]
+
+- Multiply by the atomic mass and add to the running total.
+- Multiply by 1/2 to obtain the kinetic energy.
+
+---
+
+@section V_Potential_Energy Potential Energy Function: V
+
+This function calculates the total potential energy using the Lennard-Jones potential.
+
+**Parameters:
+- `epsilon` (input): Depth of the Lennard-Jones potential well.
+- `sigma` (input): Characteristic distance for the Lennard-Jones potential.
+- `Natoms` (input): Number of atoms.
+- `distance` (input): Pairwise distance matrix (Natoms x Natoms).
+- Returns: Total potential energy of the system.
+
+<b><u>Algorithm and Explanation:</u></b>
+
+The Lennard-Jones potential is:
+
+\f[
+V(r_{ij}) = 4 \, \epsilon \left[ \left(\frac{\sigma}{r_{ij}}\right)^{12} - \left(\frac{\sigma}{r_{ij}}\right)^6 \right]
+\f]
+
+- Short-range repulsion: \f$(1/r^{12})\f$
+- Medium-range attraction: \f$(1/r^6)\f$
+
+The total potential energy sums over all distinct pairs:
+
+\f[
+V_\text{total} = \sum_{i=1}^{N_\text{atoms}-1} \sum_{j=i+1}^{N_\text{atoms}} V(r_{ij})
+\f]
+
+@note
+- Only the upper triangular part of the distance matrix is used because of matrix symmetry.
+- `epsilon` and `sigma` define the interaction strength and distance scale.
+
+---
+
+@section E_Total_Energy Total Energy Function: E
+
+This function calculates the total energy of the system.
+
+**Parameters:
+- `V_total` (input): Total potential energy.
+- `T_total` (input): Total kinetic energy.
+- Returns: Total energy of the system.
+
+<b><u>Algorithm and Explanation:</u></b>
+
+The total energy is simply:
+
+\f[
+E_\text{total} = T_\text{total} + V_\text{total}
+\f]
+
+This allows for checking energy conservation in simulations.
+
+
+*/

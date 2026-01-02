@@ -1,0 +1,134 @@
+/*!
+@file test_energies.f90
+@brief Validation tests for the `energies` module.
+
+@section Overview Overview
+
+This program performs **independent unit tests** of the three energy
+functions provided by the `energies` module:
+
+- Kinetic energy \f$T\f$
+- Lennard-Jones potential energy \f$V\f$
+- Total energy \f$E = T + V\f$
+
+Each function is tested in isolation using analytically trivial
+configurations, allowing direct verification of correctness without
+numerical ambiguity.
+
+---
+
+@section Test_Kinetic Test 1: Kinetic energy "T"
+
+The kinetic energy is defined as:
+
+\f[
+T = \frac{1}{2} \sum_i m_i v_i^2
+\f]
+
+### Test setup
+
+- Two atoms are defined, but only one carries velocity.
+- Mass of atom 1: \f$m = 2\f$
+- Velocity of atom 1: \f$v = 1\f$
+- All other velocities are zero.
+
+### Expected result
+
+\f[
+T = \frac{1}{2} \cdot 2 \cdot 1^2 = 1.0
+\f]
+
+The test verifies that the function `T` returns this exact value within
+a numerical tolerance of \f$10^{-6}\f$.
+
+---
+
+@section Test_Potential Test 2: Lennard-Jones potential energy "V"
+
+The Lennard-Jones potential is given by:
+
+\f[
+V(r) = 4 \epsilon
+\left[
+\left(\frac{\sigma}{r}\right)^{12}
+-
+\left(\frac{\sigma}{r}\right)^6
+\right]
+\f]
+
+### Test setup
+
+- Two atoms separated by a distance equal to \f$\sigma\f$
+- Parameters:
+  - \f$\epsilon = 1\f$
+  - \f$\sigma = 1\f$
+  - \f$r = \sigma\f$
+
+### Expected result
+
+At \f$r = \sigma\f$, the Lennard-Jones potential is exactly zero:
+
+\f[
+V(\sigma) = 0
+\f]
+
+The test confirms that the implementation reproduces this property.
+
+---
+
+@section Test_Total Test 3: Total energy "E"
+
+The total energy is defined as:
+
+\f[
+E = T + V
+\f]
+
+### Test setup
+
+- Input values:
+  - \f$V = 10\f$
+  - \f$T = 5\f$
+
+### Expected result
+
+\f[
+E = 10 + 5 = 15
+\f]
+
+This test verifies that the `E` function performs a simple and correct
+summation without hidden scaling factors or side effects.
+
+---
+
+@section Verification Verification criteria
+
+Each test is evaluated using an absolute tolerance of:
+
+\f[
+|E_{\text{computed}} - E_{\text{expected}}| < 10^{-6}
+\f]
+
+This tolerance is sufficient to detect implementation errors while
+remaining robust against floating-point rounding.
+
+---
+
+@section Design_Notes Design notes
+
+- Each function is tested **independently**, avoiding coupled failures.
+- All test cases use **analytically exact reference values**.
+- No stochastic elements or time integration are involved.
+- This test is suitable for:
+  - Regression testing,
+  - Validation after refactoring,
+  - Cross-checking alternative implementations.
+
+---
+
+@note
+These tests assume non-relativistic classical mechanics and neglect any
+long-range corrections, cutoffs, or unit conversions outside the
+`energies` module.
+*/
+

@@ -1,0 +1,40 @@
+/*!
+@file Makefile
+@brief Build system for the Molecular Dynamics program and its tests.
+
+This Makefile automates:
+
+- Compilation of the main program.
+- Compilation and execution of module-level tests.
+- Generation of required directories.
+- Cleanup of build artifacts.
+
+It uses GNU Fortran (`gfortran`) and organizes build outputs in the `build/` folder.
+*/
+
+/*!
+@page Makefile_Details Makefile Details
+
+# Compiler settings
+
+- `F90` : Fortran compiler (`gfortran`).
+- `FFLAGS` : Compiler flags (`-O3` optimization).
+- `LIBS` : Additional libraries (currently empty).
+
+# Directory structure
+
+- `SRC_DIR` : Source code folder (`src/`).
+- `OBJ_DIR` : Object files folder (`build/obj/`).
+- `MOD_DIR` : Module files folder (`build/mod/`).
+
+# Source files
+
+```text
+acceleration_mod.f90
+energies.f90
+error_treat.f90
+treat_input.f90
+treat_output.f90
+verlet_al.f90
+main.f90
+

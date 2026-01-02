@@ -1,0 +1,77 @@
+/*!
+@file acceleration_mod.f90
+@brief Module for computing atomic accelerations in a Molecular Dynamics simulation.
+
+@details
+The `acceleration_mod` module contains the subroutine `compute_acc` that
+calculates the acceleration of each atom in the system based on interatomic
+forces derived from a Lennard-Jones type potential. This is central to
+Molecular Dynamics (MD) simulations, where Newton's second law is applied
+to integrate atomic positions over time.
+
+The calculation is divided into two main steps:
+
+A. **Force computation between atoms**
+
+   - The module loops over all **distinct pairs of atoms** using the upper
+     triangular part of the distance matrix. This is done to avoid **double-counting**
+     the interactions between atoms i and j.
+
+   - For each pair (i,j), the distance `rij` is read from the precomputed distance matrix.
+     In principle, an improvement could be added by skipping pairs with extremely
+     small distances to avoid division by zero.
+
+   - The Lennard-Jones potential is evaluated:
+
+\f[
+       U(r_{ij}) = 24 \, \left( \frac{\epsilon}{r_{ij}} \right)
+                  \left[ \left(\frac{\sigma}{r_{ij}}\right)^6 - 2 \left(\frac{\sigma}{r_{ij}}\right)^{12} \right]
+       \f]
+
+     - This potential describes short-range **repulsion** \f$(1/r^{12})\f$ and medium-range **attraction** \f$(1/r^6)\f$ between non-bonded atoms.
+     - `epsilon` sets the depth of the potential well (strength of interaction).
+     - `sigma` sets the distance at which the potential is zero (effective atomic size).
+
+   - The force vector components are computed along each Cartesian direction (x, y, z):
+
+     \f[ F_{x} = U(r_{ij}) \frac{x_i - x_j}{r_{ij}}, \quad F_{y} = U(r_{ij}) \frac{y_i - y_j}{r_{ij}}, \quad F_{z} = U(r_{ij}) \frac{z_i - z_j}{r_{ij}} \f]
+
+   - The forces are **accumulated** in a `force` array. For each i-j pair:
+
+     - The force on atom `i` is incremented by the computed components.
+     - By Newton's third law, the force on atom `j` is **equal in magnitude and opposite in direction** to maintain momentum conservation.
+
+   This approach ensures that each pair contributes **exactly once** to the total forces, respecting physical symmetry.
+
+B. **Acceleration computation**
+
+   - Once all forces are accumulated, the acceleration of each atom is computed using **Newton’s second law**:
+
+     \f[ \mathbf{a}_i = - \frac{\mathbf{F}_i}{m_i} \f]
+
+     - The negative sign corresponds to the convention used in this code since the forces are defined as gradients of potential energy.
+     - Dividing by the atomic mass `m_i` ensures proper scaling of accelerations.
+     - This results in a 3-component acceleration vector for each atom, which can then be used in integration algorithms (e.g., Velocity Verlet).
+
+@note
+- The nested loop structure is simple and explicit but not the most efficient for large systems.
+- Ideas for improvement:
+  - Apply a **cutoff distance** to ignore very distant interactions.
+  - Vectorize the computation to use matrix operations for higher performance.
+  - Include periodic boundary conditions to mimic an infinite environment and prevent particles from drifting away, making simulations more realistic.
+
+@details
+The `compute_acc` subroutine computes the acceleration of each atom in a Molecular Dynamics (MD)
+simulation from pairwise interatomic forces using a Lennard-Jones potential.
+
+@brief Computes the acceleration of each atom from pairwise interactions.
+
+@param[in] Natoms Number of atoms in the system.
+@param[in] coord Atomic coordinates array (Natoms x 3).
+@param[in] mass Atomic masses array (Natoms).
+@param[in] distance Precomputed distance matrix (Natoms x Natoms).
+@param[in] epsilon Lennard-Jones epsilon parameter.
+@param[in] sigma Lennard-Jones sigma parameter.
+@param[out] acceleration Acceleration array (Natoms x 3).
+*/
+

@@ -1,0 +1,108 @@
+/*!
+@file test_acceleration_mod.f90
+@brief Validation tests for `acceleration_mod` module.
+
+@section Overview Overview
+
+This test program validates the **qualitative behavior** of the
+`compute_acc` subroutine from the `acceleration_mod` module.
+
+Rather than checking an exact numerical value, the test verifies that
+a **non-zero acceleration** is produced in a physically meaningful
+two-particle configuration. This approach is appropriate for early-stage
+validation of force calculations, where the goal is to detect gross
+logical or sign errors rather than achieve numerical precision.
+
+---
+
+@section Physical_Model Physical model tested
+
+The test considers a minimal system:
+
+- Two atoms (`Natoms = 2`).
+- Unit masses.
+- Unit Lennard-Jones parameters (`ε = 1`, `σ = 1`).
+- Fixed interatomic distance of 1 (arbitrary units).
+
+The atoms are placed along the X axis:
+
+- Atom 1 at (0, 0, 0)
+- Atom 2 at (1, 0, 0)
+
+Given this configuration, the Lennard-Jones force is **non-zero**, and
+therefore the acceleration acting on each atom must also be non-zero
+along the X direction.
+
+If the computed acceleration vanishes, the force evaluation is incorrect.
+
+---
+
+@section Test_Procedure Test procedure
+
+The program executes the following steps:
+
+1. **Initialization**
+   - All arrays are set to zero.
+   - Atomic masses are set to unity.
+   - Distance matrix is initialized explicitly.
+
+2. **Geometry setup**
+   - The second atom is displaced by one unit along X.
+   - The distance matrix is filled manually to avoid dependencies on
+     distance computation routines.
+
+3. **Acceleration calculation**
+   - The `compute_acc` subroutine is called using simple Lennard-Jones
+     parameters.
+
+4. **Validation criterion**
+   - The X component of the acceleration of atom 1 is examined.
+   - If `|a_x| > 10^{-6}`, the test is considered successful.
+
+---
+
+@section Validation_Criterion Validation criterion
+
+The test checks the condition:
+
+\f[
+|a_x| > 10^{-6}
+\f]
+
+This threshold avoids false negatives due to floating-point round-off
+while still detecting missing or incorrectly computed forces.
+
+The test deliberately avoids comparing against an analytical reference
+value, focusing instead on **physical consistency**.
+
+---
+
+@section Expected_Output Expected output
+
+On success, the program prints:
+
+- The computed acceleration vector for atom 1.
+- A confirmation message indicating correct behavior.
+
+If the acceleration is zero (or numerically negligible), the test reports
+a failure.
+
+---
+
+@section Design_Notes Design notes
+
+- This is a **qualitative unit test**, not a regression test.
+- It is intended to detect:
+  - Missing force contributions,
+  - Incorrect sign conventions,
+  - Failures in pairwise force accumulation.
+- The test is minimal by design and should be complemented by more
+  stringent numerical tests in production code.
+
+---
+
+@note
+This test assumes that the distance matrix is symmetric and correctly
+initialized. No periodic boundary conditions are considered.
+*/
+

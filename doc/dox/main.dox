@@ -1,0 +1,129 @@
+/*!
+@file main.f90
+@brief Main program controlling the Molecular Dynamics simulation workflow.
+
+@details
+
+This file contains the main driver of the Molecular Dynamics (MD) simulation.
+It coordinates input reading, memory allocation, force and energy evaluation,
+time integration, and output generation.
+
+The program follows a **classical Molecular Dynamics scheme** using:
+- Lennard-Jones interactions,
+- Velocity-Verlet integration,
+- Explicit energy tracking,
+- XYZ trajectory output.
+
+The physical models and numerical algorithms are delegated to specialized modules,
+while this program enforces a **clear, linear, and readable simulation pipeline**.
+
+---
+
+@section Program_Overview Program Structure Overview
+
+The execution flow is divided into the following stages:
+
+1. Simulation parameter definition
+2. Input and output initialization
+3. Memory allocation and validation
+4. Initial geometry and energy evaluation
+5. Time integration loop (Velocity-Verlet)
+6. Output writing and clean termination
+
+Each stage corresponds to a well-defined physical or numerical task.
+
+---
+
+@section Modules_Used Modules Used
+
+The main program relies on the following modules:
+
+- `treat_input`: Input file parsing and geometry preparation.
+- `treat_output`: Output file creation and formatted writing.
+- `energies`: Potential, kinetic, and total energy evaluation.
+- `acceleration_mod`: Force and acceleration computation.
+- `verlet_al`: Velocity-Verlet integration algorithm.
+- `error_treat`: Memory allocation error control.
+
+This modular structure improves readability, debugging, and extensibility.
+
+---
+
+@section Simulation_Parameters Simulation Parameters
+
+The key simulation parameters defined are:
+
+- `epsilon`: Lennard-Jones well depth (kJ/mol)
+- `sigma`: Lennard-Jones characteristic distance (converted to nm)
+- `time_step`: Integration time step (ps)
+- `steps`: Total number of MD steps
+- `M`: Output stride control parameter
+
+The input geometry is read from a plain text file (`inp.txt`).
+
+---
+
+@section Memory_Management Memory Allocation and Safety
+
+All dynamically allocated arrays are explicitly checked using the
+`error_allocate` subroutine from the `error_treat` module.
+
+Allocated arrays include:
+- Atomic coordinates
+- Atomic masses
+- Pairwise distance matrix
+- Velocities
+- Accelerations
+
+This guarantees that the simulation never proceeds with invalid memory.
+
+---
+
+@section Initial_Conditions Initial Conditions and Energies
+
+The initial configuration is defined by:
+- Coordinates read from the input file
+- Velocities initialized to zero
+- Accelerations computed from Lennard-Jones forces
+
+Initial energies are evaluated as:
+- Potential energy using the Lennard-Jones potential
+- Kinetic energy (zero at step 0)
+- Total energy as the sum of both terms
+
+The initial configuration is written to the trajectory file before time integration.
+
+---
+
+@section Time_Integration Time Integration Loop
+
+The simulation evolves through a loop over `steps` iterations.
+
+At each iteration:
+1. Positions and velocities are updated using the Velocity-Verlet algorithm.
+2. Forces and accelerations are recomputed.
+3. Energies are updated consistently.
+4. Coordinates are written to the trajectory file every `M` steps.
+5. Energies are written to the output file every `10 x M` steps.
+
+This strategy balances numerical accuracy with output file size.
+
+---
+
+@section Termination Program Termination
+
+After completing all integration steps:
+- A success message is written to the output file.
+- All open files are closed.
+- All dynamically allocated arrays are safely deallocated.
+
+The program terminates normally, ensuring no memory leaks or dangling resources.
+
+---
+
+@note
+- The current implementation assumes isolated particles without periodic boundary conditions.
+- No thermostat or barostat is applied; the simulation corresponds to a microcanonical (NVE) ensemble.
+
+*/
+
