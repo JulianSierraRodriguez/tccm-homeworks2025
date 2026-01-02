@@ -1,0 +1,116 @@
+/*!
+@file test_treat_input.f90
+@brief Validation tests for the `treat_input` module.
+
+@section Overview Overview
+
+This test program validates all public procedures provided by the
+`treat_input` module, which is responsible for reading and preparing
+the molecular input data used in the molecular dynamics simulation.
+
+The module plays a critical role in the correctness of the simulation,
+as any error in atom count, coordinates, unit conversion, or distance
+computation would propagate to all subsequent stages.
+
+@note
+The test its generated using make gen_input_test which is inside the make test command.
+---
+
+@section Tested_Functions Tested functionality
+
+The following procedures are tested:
+
+- `read_Natoms`
+- `read_molecule`
+- `compute_distances`
+
+Each test is designed to be **deterministic**, simple, and independent
+of the dynamics or force-field layers.
+
+---
+
+@section test1A Reading the number of atoms
+
+### Objective
+
+Verify that the function correctly reads the number of atoms from
+the input file.
+
+### Procedure
+
+- Call `read_Natoms` using a controlled test input file.
+- Compare the returned value with the expected atom count.
+
+### Expected behavior
+
+- The function must return exactly the number of atoms specified in
+  the first line of the input file.
+- No side effects or file pointer errors should occur.
+
+This test guarantees that all subsequent allocations in the simulation
+use the correct system size.
+
+---
+
+@section test1B Reading coordinates and unit conversion
+
+### Objective
+
+Verify that atomic coordinates and masses are read correctly and that
+the unit conversion from angström to nanometers is applied.
+
+### Procedure
+
+- Allocate arrays for coordinates and masses.
+- Call `read_molecule`.
+- Inspect one coordinate known to be exactly 10.0 angström in the input.
+
+### Expected behavior
+
+- The coordinate value must be converted to 1.0 nm.
+- Mass values must be read without modification.
+- All atoms must be read in the correct order.
+
+This test ensures **physical unit consistency**, which is essential for
+correct force and energy calculations.
+
+---
+
+@section test1C Interatomic distance calculation
+
+### Objective
+
+Verify that the internuclear distance matrix is computed correctly.
+
+### Procedure
+
+- Call `compute_distances` using the previously read coordinates.
+- Evaluate the distance between two atoms placed at known positions.
+
+### Expected behavior
+
+- The computed distance must match the analytical Euclidean distance.
+- Only the upper triangular part of the matrix is expected to be filled.
+- No redundant pair computations should occur.
+
+This test validates the geometric core used by both force and energy
+modules.
+
+---
+
+@section Design_Notes Design notes
+
+- This is a **functional correctness test**, not a performance test.
+- The input file is intentionally minimal and controlled.
+- Unit conversion is tested explicitly, not implicitly.
+- Memory allocation and deallocation are handled locally to avoid
+  side effects between tests.
+
+---
+
+@note
+If any of these tests fail, the molecular dynamics simulation should
+be considered unreliable, as all subsequent computations depend on
+correct input handling.
+*/
+

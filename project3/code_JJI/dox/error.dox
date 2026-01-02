@@ -1,0 +1,64 @@
+/*!
+@file error_treat.f90
+@brief Documentation for the error handling utilities related to memory allocation.
+
+@details
+
+The `error_treat` module provides a minimal but essential mechanism to **validate dynamic memory allocation**
+during program execution.
+
+In Molecular Dynamics simulations, arrays storing coordinates, velocities, forces, or distances can be large.
+A failed allocation usually indicates insufficient memory or an invalid allocation request. Continuing execution
+in such a case would lead to undefined behavior, segmentation faults, or corrupted results.
+
+This module enforces a **fail-fast strategy**: the program stops immediately if a memory allocation fails.
+
+---
+
+@section Error_Allocate_Subroutine Allocation Error Control Subroutine: error_allocate
+
+This subroutine checks whether a memory allocation was successful and aborts the program if it was not.
+
+### Input Parameter
+
+- `i_stat` (input): Status flag returned by an `allocate` statement.
+  - `i_stat = 0`: allocation successful.
+  - `i_stat not 0`: allocation failed.
+
+---
+
+<b><u>Algorithm and Explanation:</u></b>
+
+In Fortran, dynamic memory allocation typically follows the pattern:
+
+\f[
+\texttt{allocate(array, stat = i\_stat)}
+\f]
+
+The variable `i_stat` contains:
+- `0` if the allocation succeeded,
+- a non-zero integer if the allocation failed.
+
+The algorithm implemented is:
+
+1. Check the value of `i_stat`.
+2. If `i_stat not 0`:
+   - Write an explicit error message to the output unit.
+   - Immediately terminate the program using `stop`.
+
+This approach ensures that:
+- The program never continues with unallocated memory.
+- Errors are detected at the point where they occur.
+- Debugging is simplified by stopping execution early.
+
+---
+
+@note
+- This routine is intended to be called immediately after an `allocate` statement.
+- For larger projects, this mechanism could be extended to:
+  - include allocation size information,
+  - propagate error codes instead of stopping execution,
+  - or centralize logging to a dedicated error output file.
+
+*/
+

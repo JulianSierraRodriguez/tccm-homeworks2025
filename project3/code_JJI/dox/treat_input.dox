@@ -1,0 +1,123 @@
+/*!
+@file treat_input.f90
+@brief Input handling module for Molecular Dynamics simulations.
+
+@details
+
+This module is responsible for **reading and preprocessing all input data**
+required to initialize the Molecular Dynamics simulation.
+
+It provides:
+- One function to read the number of atoms,
+- One subroutine to read atomic coordinates and masses,
+- One subroutine to compute all pairwise internuclear distances.
+
+The module is intentionally simple and deterministic, ensuring that
+input parsing does not introduce ambiguity or hidden side effects.
+
+---
+
+@section Functions_and_Subroutines Functions and Subroutines:
+
+@section read_Natoms read_Natoms
+
+<b><u>Purpose</u></b>
+
+Reads the total number of atoms from the input file.
+
+<b><u>Description</u></b>
+
+The input file is assumed to follow a simple format where:
+- The first line contains a single integer corresponding to the number of atoms.
+
+The function opens the file, reads the first line, and immediately closes it.
+
+This value is used throughout the simulation to allocate all atom-dependent arrays.
+
+<b><u>Input</u></b>
+- `input_file`: Name of the input file.
+
+<b><u>Output</u></b>
+- `Natoms`: Total number of atoms in the system.
+
+---
+
+@section read_molecule read_molecule
+
+<b><u>Purpose</u></b>
+
+Reads atomic coordinates and atomic masses from the input file.
+
+<b><u>Description</u></b>
+
+After skipping the first line (already read by `read_Natoms`), this subroutine
+reads one line per atom containing:
+- Cartesian coordinates,
+- Atomic mass.
+
+Coordinates are read in **Angstroms** and converted internally to **nanometers**
+to ensure unit consistency with the Lennard-Jones parameters used later in the simulation.
+
+<b><u>Input</u></b>
+- `input_file`: Name of the input file.
+- `Natoms`: Number of atoms.
+
+<b><u>Output</u></b>
+- `coord(Natoms,3)`: Atomic coordinates in nanometers.
+- `mass(Natoms)`: Atomic masses.
+
+@note
+- The conversion factor applied is:  
+  1 angstrom = 0.1 nm
+- No validation of physical values is performed; the input file is assumed correct.
+
+---
+
+@section compute_distances compute_distances
+
+<b><u>Purpose</u></b>
+
+Computes all pairwise internuclear distances between atoms.
+
+<b><u>Description</u></b>
+
+This subroutine calculates the Euclidean distance between every unique
+pair of atoms using their Cartesian coordinates.
+
+Only the **upper triangular part** of the distance matrix is filled
+(i.e., pairs where `j > i`), avoiding redundant calculations.
+
+The distance matrix is later used for:
+- Lennard-Jones potential evaluation,
+- Force and acceleration computation.
+
+<b><u>Input</u></b>
+- `Natoms`: Number of atoms.
+- `coord(Natoms,3)`: Atomic coordinates.
+
+<b><u>Output</u></b>
+- `distance(Natoms,Natoms)`: Pairwise internuclear distances.
+
+<b><u>Mathematical expression</u></b>
+
+The distance between atoms *i* and *j* is computed as:
+
+\f[
+r_{ij} = \sqrt{(x_j - x_i)^2 + (y_j - y_i)^2 + (z_j - z_i)^2}
+\f]
+
+---
+
+@section Design_Considerations Design Considerations
+
+- The module assumes a **non-periodic, isolated system**.
+- Distance calculations scale as \( \mathcal{O}(N^2) \), which is acceptable
+  for small systems but not optimized for large-scale simulations.
+- No neighbor lists or cutoff schemes are implemented by design.
+
+---
+
+@note
+This module focuses strictly on **input handling and geometric preprocessing**.
+*/
+

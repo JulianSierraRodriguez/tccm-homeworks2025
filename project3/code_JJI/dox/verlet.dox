@@ -1,0 +1,155 @@
+/*!
+@file verlet_al.f90
+@brief Documentation for the Verlet integration algorithm used in the Molecular Dynamics simulation.
+
+@details
+
+The `verlet_al` module implements the **velocity Verlet algorithm**, a time-reversible and symplectic
+integration scheme widely used in Molecular Dynamics (MD).  
+Its purpose is to propagate atomic positions and velocities in time while maintaining good energy
+conservation properties.
+
+The algorithm updates:
+- Atomic positions.
+- Atomic velocities.
+- Atomic accelerations.
+- Kinetic, potential, and total energies.
+- Output of trajectories and energy logs at fixed intervals.
+
+---
+
+@section Modules_Used Modules Used
+
+The verlet algorithm program relies on the following modules:
+
+- `treat_input`: Input file parsing and geometry preparation.
+- `treat_output`: Output file creation and formatted writing.
+- `energies`: Potential, kinetic, and total energy evaluation.
+- `acceleration_mod`: Force and acceleration computation.
+
+---
+
+@section Verlet_Subroutine Verlet Integration Subroutine: verlet_algorithm
+
+This subroutine advances the system by **one time step** using the velocity Verlet scheme.
+
+### Input and Output Parameters
+
+- `Natoms` (input): Number of atoms in the system.
+- `coord` (input/output): Atomic coordinates at the current step (Natoms x 3).
+- `velocity` (input/output): Atomic velocities at the current step (Natoms x 3).
+- `acceleration` (input/output): Atomic accelerations at the current step (Natoms x 3).
+- `time_step` (input): Integration time step.
+- `epsilon`, `sigma` (input): Lennard-Jones parameters.
+- `mass` (input): Atomic masses.
+- `T_total` (output): Total kinetic energy.
+- `V_total` (output): Total potential energy.
+- `E_total` (output): Total energy.
+- `u_xyz` (input): Unit number for the trajectory (XYZ) output file.
+- `u_output` (input): Unit number for the energy log output file.
+- `iter` (input): Current MD iteration.
+- `M` (input): Output frequency parameter.
+
+---
+
+<b><u>Algorithm and Explanation:</u></b>
+
+The velocity Verlet algorithm consists of three main stages:
+
+---
+
+### 1. Position Update
+
+New atomic positions are computed using the current positions, velocities, and accelerations:
+
+\f[
+\mathbf{r}_i(t+\Delta t) =
+\mathbf{r}_i(t) + \mathbf{v}_i(t)\,\Delta t +
+\frac{1}{2}\,\mathbf{a}_i(t)\,\Delta t^2
+\f]
+
+This step:
+- Uses a second-order Taylor expansion.
+- Ensures time reversibility.
+- Does not require future forces.
+
+---
+
+### 2. Force and Acceleration Recalculation
+
+Once new positions are known:
+
+1. Pairwise distances are recomputed.
+2. New forces are calculated using the Lennard-Jones potential.
+3. New accelerations are obtained via Newton's second law:
+
+\f[
+\mathbf{a}_i(t+\Delta t) = - \frac{\mathbf{F}_i(t+\Delta t)}{m_i}
+\f]
+
+This separation between position and force updates improves numerical stability.
+
+---
+
+### 3. Velocity Update
+
+Velocities are updated using the **average acceleration** between time steps:
+
+\f[
+\mathbf{v}_i(t+\Delta t) =
+\mathbf{v}_i(t) +
+\frac{1}{2}\left[
+\mathbf{a}_i(t) + \mathbf{a}_i(t+\Delta t)
+\right]\Delta t
+\f]
+
+This step:
+- Couples old and new accelerations.
+- Improves energy conservation compared to simple Verlet.
+- Keeps velocities synchronized with positions.
+
+---
+
+### 4. Energy Evaluation
+
+After updating positions and velocities:
+
+- Potential energy is computed using the Lennard-Jones model.
+- Kinetic energy is computed from velocities.
+- Total energy is obtained as:
+
+\f[
+E_\text{total} = T_\text{total} + V_\text{total}
+\f]
+
+This allows continuous monitoring of energy conservation during the simulation.
+
+---
+
+### 5. Output Control
+
+- Atomic coordinates are written to the trajectory file every `M` steps.
+- Energies are written to the output file every `10 x M` steps.
+- This staggered output reduces I/O overhead while preserving diagnostics.
+
+---
+
+### 6. State Update
+
+Finally, the newly computed:
+- Coordinates.
+- Velocities.
+- Accelerations.  
+
+replace the old ones to prepare the next MD iteration.
+
+---
+
+@note
+- The velocity Verlet algorithm is symplectic and conserves energy well for sufficiently small time steps.
+- No thermostats or barostats are included.
+- Stability depends on the choice of `time_step` and Lennard-Jones parameters.
+- The method assumes classical Newtonian dynamics.
+
+*/
+

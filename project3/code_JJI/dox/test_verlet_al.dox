@@ -1,0 +1,136 @@
+/*!
+@file test_verlet_al.f90
+@brief Validation tests for the `verlet_al` module and Verlet algorithm.
+
+@section Overview Overview
+
+This test program validates the `verlet_al` module, which implements
+the Verlet integration algorithm for molecular dynamics simulations.
+
+The test uses a simple two-atom system to check that the algorithm
+correctly updates positions, velocities, and accelerations according
+to a Lennard-Jones interaction.
+
+---
+
+@section Tested_Functions Tested functionality
+
+- `verlet_algorithm` from `verlet_al`.
+- `compute_acc` from `acceleration_mod`.
+- `compute_distances` from `treat_input`.
+- `create_output` from `treat_output`.
+
+The test focuses on verifying **numerical correctness** of the integration
+scheme and proper file handling for output.
+
+---
+
+@section Test_Setup System setup
+
+- Two atoms in 1D along the X-axis:
+  - Atom 1 at x = -0.5
+  - Atom 2 at x =  0.5
+- Both atoms have mass = 1.0
+- Initial velocities = 0
+- Lennard-Jones parameters: epsilon = 1.0, sigma = 1.0
+- Time step = 0.1
+- Single MD step (iter = 1, M = 1)
+- Dummy output files created for testing I/O functionality
+
+---
+
+@section test3A Initial acceleration check
+
+### Objective
+
+Verify that the initial acceleration calculation is correct before
+the Verlet step.
+
+### Procedure
+
+- Compute distances using `compute_distances`.
+- Compute initial acceleration using `compute_acc`.
+- Compare the calculated acceleration with expected values:
+  - a_x1 = -24.0
+  - a_x2 =  24.0
+
+### Expected behavior
+
+- Acceleration values must match expected analytical results.
+- Non-zero values indicate that the force calculation is functioning correctly.
+
+@note
+Even if this test fails, it is not indicated because this subroutine already has its own test.
+
+---
+
+@section test3B Updated positions after 1 Verlet step
+
+### Objective
+
+Verify that the Verlet algorithm correctly updates atomic positions.
+
+### Procedure
+
+- Call `verlet_algorithm` for 1 time step.
+- Compare updated positions with expected analytical values:
+  - x1 = -0.62
+  - x2 =  0.62
+
+### Expected behavior
+
+- Positions must match expected values within a tolerance of 1e-6.
+- Ensures that integration step is correctly applied.
+
+---
+
+@section test3C Updated accelerations
+
+### Objective
+
+Verify that accelerations are recalculated correctly after the Verlet step.
+
+### Procedure
+
+- Compare updated accelerations with expected values:
+  - a_x1 = 1.931445...
+  - a_x2 = -1.931445...
+
+### Expected behavior
+
+- Accelerations must match the expected results within tolerance.
+- Confirms proper recalculation using new positions.
+
+---
+
+@section test3D Updated velocities
+
+### Objective
+
+Verify that velocities are correctly updated by the Verlet algorithm.
+
+### Procedure
+
+- Compare updated velocities with expected values:
+  - v_x1 = -1.103428...
+  - v_x2 =  1.103428...
+
+### Expected behavior
+
+- Velocities must match expected results within 1e-6.
+- Ensures correct velocity integration and momentum conservation.
+
+---
+
+@section Summary Summary of results
+
+- If all coordinate, velocity, and acceleration checks pass,
+  the Verlet algorithm is considered verified for this simple test case.
+- Dummy output files are closed and deleted at the end of the test
+  to avoid cluttering the workspace.
+
+@note
+This test is deterministic and designed for a simple two-atom system
+to provide a **quantitative check** of the integration scheme.
+*/
+
