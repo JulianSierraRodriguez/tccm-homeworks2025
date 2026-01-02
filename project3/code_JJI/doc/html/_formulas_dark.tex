@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{ifthen}
+\usepackage{epsfig}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\color{white}
+\pagecolor{black}
+\usepackage{newunicodechar}
+  \makeatletter
+    \def\doxynewunicodechar#1#2{%
+    \@tempswafalse
+    \edef\nuc@tempa{\detokenize{#1}}%
+    \if\relax\nuc@tempa\relax
+      \nuc@emptyargerr
+    \else
+      \edef\@tempb{\expandafter\@car\nuc@tempa\@nil}%
+      \nuc@check
+      \if@tempswa
+        \@namedef{u8:\nuc@tempa}{#2}%
+      \fi
+    \fi
+  }
+  \makeatother
+  \doxynewunicodechar{⁻}{${}^{-}$}% Superscript minus
+  \doxynewunicodechar{²}{${}^{2}$}% Superscript two
+  \doxynewunicodechar{³}{${}^{3}$}% Superscript three
+
+\pagestyle{empty}
+\begin{document}
+\[ U(r_{ij}) = 24 \epsilon \left( \frac{\sigma}{r_{ij}} \right) \left[ \left(\frac{\sigma}{r_{ij}}\right)^6 - 2 \left(\frac{\sigma}{r_{ij}}\right)^{12} \right] \]
+\pagebreak
+
+\[ F_{x} = U(r_{ij}) \frac{x_i - x_j}{r_{ij}}, \quad F_{y} = U(r_{ij}) \frac{y_i - y_j}{r_{ij}}, \quad F_{z} = U(r_{ij}) \frac{z_i - z_j}{r_{ij}} \]
+\pagebreak
+
+\[ \mathbf{a}_i = - \frac{\mathbf{F}_i}{m_i} \]
+\pagebreak
+
+\end{document}
